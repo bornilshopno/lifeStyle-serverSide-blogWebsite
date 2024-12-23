@@ -35,12 +35,26 @@ async function run() {
     await client.connect();
     const database=client.db("blogDB");
     const blogCollection=database.collection("blogCollection");
-
+    const commentCollection=database.collection("commentCollection");
 
     app.post("/blogs", async(req,res)=>{
         const blog=req.body
         const result= await blogCollection.insertOne(blog);
         res.send(result)
+    })
+
+    app.post("/comments", async(req,res)=>
+    {
+      const comment=req.body;
+      const result= await commentCollection.insertOne(comment);
+      res.send(result)
+    })
+
+    app.get("/comment/:id", async(req,res)=>{
+      const id=req.params.id;
+      const query={blogID: id}
+      const result= await commentCollection.find(query).toArray()
+      res.send(result)
     })
 
     app.get("/blogs",async(req,res)=>{
