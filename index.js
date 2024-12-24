@@ -37,11 +37,27 @@ async function run() {
     const database = client.db("blogDB");
     const blogCollection = database.collection("blogCollection");
     const commentCollection = database.collection("commentCollection");
+    const wishCollection = database.collection("wishCollection")
 
     app.post("/blogs", async (req, res) => {
       const blog = req.body
       const result = await blogCollection.insertOne(blog);
       res.send(result)
+    })
+
+    app.post("/wishlist", async (req, res) => {
+      const wish = req.body;
+      const result = await wishCollection.insertOne(wish)
+      res.send(result)
+    })
+
+    app.get("/myWishes", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        wishOf: email
+      }
+      const result = await wishCollection.find(query).toArray()
+      res.send(result);
     })
 
     app.post("/comments", async (req, res) => {
@@ -78,17 +94,23 @@ async function run() {
       const options = { upsert: true };
       const updatedDoc = {
         $set: {
-          thumbnail : updatedBlog.thumbnail,
-          title : updatedBlog.title,
-          category : updatedBlog.category,
-          shortDescription : updatedBlog.shortDescription,
-          longDescription : updatedBlog.longDescription,          
+          thumbnail: updatedBlog.thumbnail,
+          title: updatedBlog.title,
+          category: updatedBlog.category,
+          shortDescription: updatedBlog.shortDescription,
+          longDescription: updatedBlog.longDescription,
         }
       }
-      const result=await blogCollection.updateOne(filter, updatedDoc,options)
+      const result = await blogCollection.updateOne(filter, updatedDoc, options)
       res.send(result)
     })
 
+    app.delete("/wish/:id", async(req,res)=>{
+      const id=req.params.id;
+      const query={_id : new ObjectId(id)};
+      const result=await wishCollection.deleteOne(query);
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
