@@ -86,6 +86,24 @@ async function run() {
       res.send(result)
     })
 
+    app.get("/allblogs", async(req,res)=>{
+      const filter=req.query.filter;
+      const search=req.query.search;
+      let query={title: {$regex: search, $options:"i"},}
+
+      if (filter) query.category=filter;
+      const result=await blogCollection.find(query).toArray();
+      console.log(result)
+      res.send(result)
+    })
+
+
+    app.get("/latest-blogs",async (req,res) => {
+      const cursor = blogCollection.find().sort( {"_id": -1 } ).limit(6);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
     app.put("/blogs/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id)
