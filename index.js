@@ -39,8 +39,7 @@ const verifyToken = (req, res, next) => {
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.pqwog.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// console.log(process.env.DB_user)
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -146,7 +145,7 @@ async function run() {
 
 
     app.get("/latest-blogs", async (req, res) => {
-      const cursor = blogCollection.find().sort({ "_id": -1 }).limit(6);
+      const cursor = blogCollection.find().sort({ "_id": -1 }).limit(8);
       const result = await cursor.toArray();
       res.send(result)
     })
